@@ -1,7 +1,7 @@
 use std::env;
-
 use clap::Parser;
 use proxy_logger::Arguments;
+use proxy_logger::initialize_tcp_listener;
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() {
@@ -14,4 +14,5 @@ async fn main() {
         .format_module_path(false)
         .init();
 
+    initialize_tcp_listener(arguments).await;
 }
