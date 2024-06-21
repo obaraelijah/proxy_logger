@@ -3,6 +3,7 @@ use std::str::FromStr;
 use clap::builder::PossibleValue;
 use clap::ValueEnum;
 use clap::Parser;
+use env_logger::TimestampPrecision as EnvLoggerTimestampPrecision;
 use logged_stream::BinaryFormatter;
 use logged_stream::BufferFormatter;
 use logged_stream::DecimalFormatter;
@@ -44,6 +45,19 @@ impl ValueEnum for LoggingLevel {
     }
 }
 
+impl FromStr for LoggingLevel {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for variant in Self::value_variants() {
+            if variant.to_possible_value().unwrap().matches(s, false) {
+                return Ok(*variant);
+            }
+        }
+        Err(format!("Invalid variant: {}", s))
+    }
+}
+
 impl std::fmt::Display for LoggingLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.to_possible_value()
@@ -81,6 +95,28 @@ impl ValueEnum for PayloadFormatingKind {
             Self::Binary => PossibleValue::new("binary"),
             Self::Octal => PossibleValue::new("octal"),
         })
+    }
+}
+
+impl FromStr for PayloadFormatingKind {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for variant in Self::value_variants() {
+            if variant.to_possible_value().unwrap().matches(s, false) {
+                return Ok(*variant);
+            }
+        }
+        Err(format!("Invalid variant: {}", s))
+    }
+}
+
+impl std::fmt::Display for PayloadFormatingKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.to_possible_value()
+            .expect("no values are skipped")
+            .get_name()
+            .fmt(f)
     }
 }
 
@@ -135,6 +171,26 @@ impl FromStr for TimestampPrecision {
             }
         }
         Err(format!("Invalid variant: {}", s))
+    }
+}
+
+impl std::fmt::Display for TimestampPrecision {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.to_possible_value()
+            .expect("no values are skipped")
+            .get_name()
+            .fmt(f)
+    }
+}
+
+impl From<TimestampPrecision> for EnvLoggerTimestampPrecision {
+    fn from(precision: TimestampPrecision) -> Self {
+        match precision {
+            TimestampPrecision::Seconds => EnvLoggerTimestampPrecision::Seconds,
+            TimestampPrecision::Milliseconds => EnvLoggerTimestampPrecision::Millis,
+            TimestampPrecision::Microseconds => EnvLoggerTimestampPrecision::Micros,
+            TimestampPrecision::Nanoseconds => EnvLoggerTimestampPrecision::Nanos,
+        }
     }
 }
 
