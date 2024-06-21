@@ -46,6 +46,36 @@ impl std::fmt::Display for LoggingLevel {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum PayloadFormatingKind {
+    Decimal,
+    LowerHex,
+    UpperHex,
+    Binary,
+    Octal,
+}
+
+impl ValueEnum for PayloadFormatingKind {
+    fn value_variants<'a>() -> &'a [Self] {
+        &[
+            Self::Decimal,
+            Self::LowerHex,
+            Self::UpperHex,
+            Self::Binary,
+            Self::Octal,
+        ]
+    }
+
+    fn to_possible_value(&self) -> Option<PossibleValue> {
+        Some(match self {
+            Self::Decimal => PossibleValue::new("decimal"),
+            Self::LowerHex => PossibleValue::new("lowerhex"),
+            Self::UpperHex => PossibleValue::new("upperhex"),
+            Self::Binary => PossibleValue::new("binary"),
+            Self::Octal => PossibleValue::new("octal"),
+        })
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum TimestampPrecision {
@@ -91,6 +121,12 @@ pub struct Arguments {
     /// Incoming connection reading timeout.
     #[arg(short, long, default_value = "60")]
     pub timeout: u64,
+    /// Formatting of console payload output,
+    #[arg(short, long, default_value = "lowerhex")]
+    pub formatting: PayloadFormatingKind,
+    /// Console payload output bytes separator.
+    #[arg(short, long, default_value = ":")]
+    pub separator: String,
     /// Timestamp precision.
     #[arg(short, long, default_value = "seconds")]
     pub precision: TimestampPrecision,
