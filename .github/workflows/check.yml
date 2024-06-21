@@ -1,0 +1,111 @@
+name: check
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+    workflow_dispatch: {}
+
+jobs:
+    clippy:
+        name: Clippy
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                rust: [stable, beta, nightly]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+            - name: Install rust (${{ matrix.rust }})
+              uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
+              with:
+                  components: clippy, rustfmt
+                  toolchain: ${{ matrix.rust }}
+
+            - name: Run clippy
+              run: cargo clippy --all-features -- -D warnings
+
+    fmt:
+        name: Formatting
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+            - name: Install rust (stable)
+              uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
+              with:
+                  components: clippy, rustfmt
+                  toolchain: stable
+
+            - name: Run rustfmt
+              run: cargo fmt --check
+
+    build_and_test:
+        name: Build and test
+        runs-on: ${{ matrix.os }}-latest
+
+        strategy:
+            matrix:
+                os: [ubuntu, macos, windows]
+                rust: [stable, beta, nightly]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+            - name: Install rust (${{ matrix.rust }})
+              uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
+              with:
+                  toolchain: ${{ matrix.rust }}
+
+            - name: Cache
+              uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+              with:
+                  path: |
+                      ~/.cargo
+                      target
+                  key: ${{ matrix.os }}-${{ matrix.rust }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: |
+                      ${{ matrix.os }}-${{ matrix.rust }}-${{ hashFiles('Cargo.lock') }}
+                      ${{ matrix.os }}-${{ matrix.rust }}-
+
+            - name: Build
+              run: cargo build --all-targets
+
+            - name: Tests
+              run: cargo test
+
+    msrv:
+        name: Check minimal supported rust version (MSRV).
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+            - name: Install rust (stable)
+              uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
+              with:
+                  toolchain: stable
+
+            - name: Cache
+              uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+              with:
+                  path: |
+                      ~/.cargo
+                      target
+                  key: ${{ runner.os }}-msrv
+
+            - name: Install cargo-msrv
+              run: cargo install cargo-msrv
+
+            - name: Check msrv
+              run: cargo msrv
