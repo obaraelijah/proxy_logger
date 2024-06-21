@@ -1,3 +1,7 @@
+## v0.1.3 (20.06.2024)
+
+-   README improvements
+
 ## v0.1.2 (21.06.2024)
 
 -   Added ability to provide custom bytes separator via command line argument `--separator`.
