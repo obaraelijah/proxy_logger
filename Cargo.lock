@@ -404,6 +404,7 @@ dependencies = [
 name = "proxy_logger"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "clap",
  "env_logger",
  "log",
