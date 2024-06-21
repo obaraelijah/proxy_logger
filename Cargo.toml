@@ -1,6 +1,18 @@
 [package]
 name = "proxy_logger"
 version = "0.1.0"
+authors = ["Elijah Samson <elijahobara357@gmail.com>"]
+description = "Command line interface for proxying TCP connections with payload output into console which can be formatted different ways."
+keywords = ["network", "tcp", "proxy", "logging", "debugging"]
+categories = [
+    "command-line-utilities",
+    "development-tools::debugging",
+    "network-programming"
+]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/obaraelijah/proxy_logger"
+homepage = "https://github.com/obaraelijah/proxy_logger"
+readme = "README.md"
 edition = "2021"
 
 [dependencies]
