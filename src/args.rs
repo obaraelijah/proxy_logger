@@ -1,8 +1,6 @@
-use std::net;
-use std::str::FromStr;
 use clap::builder::PossibleValue;
-use clap::ValueEnum;
 use clap::Parser;
+use clap::ValueEnum;
 use env_logger::TimestampPrecision as EnvLoggerTimestampPrecision;
 use logged_stream::BinaryFormatter;
 use logged_stream::BufferFormatter;
@@ -10,6 +8,8 @@ use logged_stream::DecimalFormatter;
 use logged_stream::LowercaseHexadecimalFormatter;
 use logged_stream::OctalFormatter;
 use logged_stream::UppercaseHexadecimalFormatter;
+use std::net;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy)]
 pub enum LoggingLevel {
@@ -126,8 +126,12 @@ pub fn get_formatter_by_kind(
 ) -> Box<dyn BufferFormatter> {
     match kind {
         PayloadFormatingKind::Decimal => Box::new(DecimalFormatter::new(Some(separator))),
-        PayloadFormatingKind::LowerHex => Box::new(LowercaseHexadecimalFormatter::new(Some(separator))),
-        PayloadFormatingKind::UpperHex => Box::new(UppercaseHexadecimalFormatter::new(Some(separator))),
+        PayloadFormatingKind::LowerHex => {
+            Box::new(LowercaseHexadecimalFormatter::new(Some(separator)))
+        }
+        PayloadFormatingKind::UpperHex => {
+            Box::new(UppercaseHexadecimalFormatter::new(Some(separator)))
+        }
         PayloadFormatingKind::Binary => Box::new(BinaryFormatter::new(Some(separator))),
         PayloadFormatingKind::Octal => Box::new(OctalFormatter::new(Some(separator))),
     }
