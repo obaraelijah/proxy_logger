@@ -24,5 +24,7 @@ pub async fn initialize_tcp_listener(arguments: Arguments) {
 }
 
 async fn incoming_connection_handle(arguments: Arguments, source_stream: tokio_net::TcpStream) {
-    todo!()
+    let destination_stream = tokio_net::TcpStream::connect(arguments.remote_addr)
+        .await
+        .expect("Failed to connect to destination address");
 }

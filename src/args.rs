@@ -46,9 +46,38 @@ impl std::fmt::Display for LoggingLevel {
     }
 }
 
-#[derive(Debug, Clone, Parser)]
+
+#[derive(Debug, Clone, Copy)]
+pub enum TimestampPrecision {
+    Seconds,
+    Milliseconds,
+    Microseconds,
+    Nanoseconds,
+}
+
+impl ValueEnum for TimestampPrecision {
+    fn value_variants<'a>() -> &'a [Self] {
+        &[
+            Self::Seconds,
+            Self::Milliseconds,
+            Self::Microseconds,
+            Self::Nanoseconds,
+        ]
+    }
+
+    fn to_possible_value(&self) -> Option<PossibleValue> {
+        Some(match self {
+            Self::Seconds => PossibleValue::new("seconds"),
+            Self::Milliseconds => PossibleValue::new("milliseconds"),
+            Self::Microseconds => PossibleValue::new("microseconds"),
+            Self::Nanoseconds => PossibleValue::new("nanoseconds"),
+        })
+    }
+}
+
 #[command(next_line_help = true)]
 #[command(author, version, about, long_about = None)]
+#[derive(Debug, Clone, Parser)]
 pub struct Arguments {
     /// Application logging level.
     #[arg(short, long, default_value = "debug")]
@@ -62,5 +91,7 @@ pub struct Arguments {
     /// Incoming connection reading timeout.
     #[arg(short, long, default_value = "60")]
     pub timeout: u64,
-
+    /// Timestamp precision.
+    #[arg(short, long, default_value = "seconds")]
+    pub precision: TimestampPrecision,
 }
