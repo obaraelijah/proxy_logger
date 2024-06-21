@@ -1,7 +1,14 @@
 use std::net;
+use std::str::FromStr;
 use clap::builder::PossibleValue;
 use clap::ValueEnum;
 use clap::Parser;
+use logged_stream::BinaryFormatter;
+use logged_stream::BufferFormatter;
+use logged_stream::DecimalFormatter;
+use logged_stream::LowercaseHexadecimalFormatter;
+use logged_stream::OctalFormatter;
+use logged_stream::UppercaseHexadecimalFormatter;
 
 #[derive(Debug, Clone, Copy)]
 pub enum LoggingLevel {
@@ -77,6 +84,19 @@ impl ValueEnum for PayloadFormatingKind {
     }
 }
 
+pub fn get_formatter_by_kind(
+    kind: PayloadFormatingKind,
+    separator: &str,
+) -> Box<dyn BufferFormatter> {
+    match kind {
+        PayloadFormatingKind::Decimal => Box::new(DecimalFormatter::new(Some(separator))),
+        PayloadFormatingKind::LowerHex => Box::new(LowercaseHexadecimalFormatter::new(Some(separator))),
+        PayloadFormatingKind::UpperHex => Box::new(UppercaseHexadecimalFormatter::new(Some(separator))),
+        PayloadFormatingKind::Binary => Box::new(BinaryFormatter::new(Some(separator))),
+        PayloadFormatingKind::Octal => Box::new(OctalFormatter::new(Some(separator))),
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum TimestampPrecision {
     Seconds,
@@ -102,6 +122,19 @@ impl ValueEnum for TimestampPrecision {
             Self::Microseconds => PossibleValue::new("microseconds"),
             Self::Nanoseconds => PossibleValue::new("nanoseconds"),
         })
+    }
+}
+
+impl FromStr for TimestampPrecision {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for variant in Self::value_variants() {
+            if variant.to_possible_value().unwrap().matches(s, false) {
+                return Ok(*variant);
+            }
+        }
+        Err(format!("Invalid variant: {}", s))
     }
 }
 
