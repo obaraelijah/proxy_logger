@@ -37,7 +37,7 @@ $ proxy_logger --bind-listener-addr 127.0.0.1:20502 --remote-addr 127.0.0.1:2058
 Run the following command and wait until the crate is compiled:
 
 ```sh
-$ cargo install --git https://github.com/obaraelijah/proxy_logger.git --tag v0.1.0 proxy_logger
+$ cargo install --git https://github.com/obaraelijah/proxy_logger.git --tag v0.1.1 proxy_logger
 ```
 
 Also you can remove tag option to install the latest development version.

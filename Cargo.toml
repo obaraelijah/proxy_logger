@@ -1,6 +1,6 @@
 [package]
 name = "proxy_logger"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Elijah Samson <elijahobara357@gmail.com>"]
 description = "Command line interface for proxying TCP connections with payload output into console which can be formatted different ways."
 keywords = ["network", "tcp", "proxy", "logging", "debugging"]
