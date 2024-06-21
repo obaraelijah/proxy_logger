@@ -47,3 +47,34 @@ Now you can run compiled binary:
 ```sh
 $ proxy_logger --bind-listener-addr 127.0.0.1:20502 --remote-addr 127.0.0.1:20582
 ```
+## Options
+
+Below is a list of currently supported options.
+
+```
+$ proxy_logger --help
+Command line interface for proxying TCP connections with payload output into console which can be formatted different ways.
+
+Usage: proxy_logger [OPTIONS] --bind-listener-addr <BIND_LISTENER_ADDR> --remote-addr <REMOTE_ADDR>
+
+Options:
+  -l, --level <LEVEL>
+          Application logging level [default: debug] [possible values: trace, debug, info, warn, error, off]
+  -b, --bind-listener-addr <BIND_LISTENER_ADDR>
+          Address on which TCP listener should be binded
+  -r, --remote-addr <REMOTE_ADDR>
+          Address of remote server
+  -t, --timeout <TIMEOUT>
+          Incoming connection reading timeout [default: 60]
+  -f, --formatting <FORMATTING>
+          Formatting of console payload output, [default: lowerhex] [possible values: decimal, lowerhex, upperhex, binary, octal]
+  -s, --separator <SEPARATOR>
+          Console payload output bytes separator [default: :]
+  -p, --precision <PRECISION>
+          Timestamp precision [default: seconds] [possible values: seconds, milliseconds, microseconds, nanoseconds]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
+```
+
