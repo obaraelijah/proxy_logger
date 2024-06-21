@@ -1,13 +1,7 @@
 use clap::builder::PossibleValue;
-use clap::Parser;
-use clap::ValueEnum;
+use clap::{Parser, ValueEnum};
 use env_logger::TimestampPrecision as EnvLoggerTimestampPrecision;
-use logged_stream::BinaryFormatter;
-use logged_stream::BufferFormatter;
-use logged_stream::DecimalFormatter;
-use logged_stream::LowercaseHexadecimalFormatter;
-use logged_stream::OctalFormatter;
-use logged_stream::UppercaseHexadecimalFormatter;
+use logged_stream::{BinaryFormatter, BufferFormatter, DecimalFormatter, LowercaseHexadecimalFormatter, OctalFormatter, UppercaseHexadecimalFormatter};
 use std::net;
 use std::str::FromStr;
 
@@ -198,9 +192,8 @@ impl From<TimestampPrecision> for EnvLoggerTimestampPrecision {
     }
 }
 
-#[command(next_line_help = true)]
-#[command(author, version, about, long_about = None)]
 #[derive(Debug, Clone, Parser)]
+#[command(next_line_help = true, author, version, about, long_about = None)]
 pub struct Arguments {
     /// Application logging level.
     #[arg(short, long, default_value = "debug")]
@@ -214,7 +207,7 @@ pub struct Arguments {
     /// Incoming connection reading timeout.
     #[arg(short, long, default_value = "60")]
     pub timeout: u64,
-    /// Formatting of console payload output,
+    /// Formatting of console payload output.
     #[arg(short, long, default_value = "lowerhex")]
     pub formatting: PayloadFormatingKind,
     /// Console payload output bytes separator.
