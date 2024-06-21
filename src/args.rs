@@ -1,7 +1,10 @@
 use clap::builder::PossibleValue;
 use clap::{Parser, ValueEnum};
 use env_logger::TimestampPrecision as EnvLoggerTimestampPrecision;
-use logged_stream::{BinaryFormatter, BufferFormatter, DecimalFormatter, LowercaseHexadecimalFormatter, OctalFormatter, UppercaseHexadecimalFormatter};
+use logged_stream::{
+    BinaryFormatter, BufferFormatter, DecimalFormatter, LowercaseHexadecimalFormatter,
+    OctalFormatter, UppercaseHexadecimalFormatter,
+};
 use std::net;
 use std::str::FromStr;
 
