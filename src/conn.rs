@@ -1,8 +1,10 @@
 use crate::get_formatter_by_kind;
 use crate::Arguments;
 use bytes::BytesMut;
-use tokio::io::{self, AsyncReadExt};
+use std::time::Duration;
+use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net as tokio_net;
+use tokio::time::timeout;
 
 pub async fn initialize_tcp_listener(arguments: Arguments) {
     let listener = tokio_net::TcpListener::bind(arguments.bind_listener_addr)
@@ -40,12 +42,38 @@ async fn incoming_connection_handle(arguments: Arguments, source_stream: tokio_n
     let destination_stream_handle = tokio::spawn(async move {
         let mut buffer = BytesMut::with_capacity(2048);
         'destination_stream_handle: loop {
-            let Ok(read_length) = destination_stream_read_half.read_buf(&mut buffer).await else {
+            let Ok(read_length) = destination_stream_read_half.read_buf(&mut buffer).await else { 
                 break 'destination_stream_handle;
             };
             if read_length == 0 {
                 continue 'destination_stream_handle;
             }
+            let Ok(write_length) = source_stream_write_half.write(&buffer[0..read_length]).await else {
+                break 'destination_stream_handle;
+            };
+            assert_eq!(read_length, write_length);
+            buffer.clear();
+        }
+    });
+
+    tokio::spawn(async move {
+        let mut buffer = BytesMut::with_capacity(2048);
+        'source_stream_handle: loop {
+            let Ok(Ok(read_length)) = timeout(
+                Duration::from_secs(arguments.timeout),
+                source_stream_read_half.read_buf(&mut buffer)
+            ).await else {
+                destination_stream_handle.abort();
+                break 'source_stream_handle;
+            };
+            if read_length == 0 {
+                continue 'source_stream_handle;
+            }
+            let Ok(write_length) = destination_stream_write_half.write(&buffer[0..read_length]).await else {
+                destination_stream_handle.abort();
+                break 'source_stream_handle;
+            };
+            assert_eq!(read_length, write_length);
             buffer.clear();
         }
     });
